@@ -19,5 +19,13 @@
   "imports": {
     "@std/assert": "jsr:@std/assert@^1.0.19",
     "@std/http": "jsr:@std/http@^1.0.25"
+  },
+  "deploy": {
+    "project": "af55b7fd-ea3f-49fc-9403-ac035c993fc2",
+    "exclude": [
+      "**/node_modules"
+    ],
+    "include": [],
+    "entrypoint": "src/main.ts"
   }
 }
