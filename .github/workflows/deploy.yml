@@ -1,10 +1,11 @@
-name: CI
+name: Deploy
 
 on:
-  pull_request:
+  push:
     branches: [main]
 
 permissions:
+  id-token: write
   contents: read
 
 jobs:
@@ -19,3 +20,13 @@ jobs:
       - run: deno lint
       - run: deno check src/ test/
       - run: deno test --allow-net test/
+
+  deploy:
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/deployctl@v1
+        with:
+          project: httpstatus
+          entrypoint: src/main.ts
