@@ -1,0 +1,8 @@
+{
+  "name": "@hugojosefson/httpstatus",
+  "version": "0.0.0",
+  "description": "A reimplementation of https://httpstat.us",
+  "license": "MIT",
+  "exports": {
+  }
+}
