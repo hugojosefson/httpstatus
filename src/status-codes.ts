@@ -1,8 +1,9 @@
 /**
  * HTTP status codes and their descriptions.
  *
- * Standard codes come from @std/http/status.
- * Non-standard codes used by nginx, Cloudflare, AWS, etc. are listed here
+ * Standard codes come from @std/http/status, filtered to only those
+ * that Deno can actually serve (101, 200-599).
+ * Non-standard codes used by nginx, Cloudflare, AWS, etc. are listed
  * as a supplement.
  */
 
@@ -15,14 +16,23 @@ export interface StatusEntry {
 }
 
 /**
- * Build the standard entries from @std/http/status.
- * STATUS_TEXT is keyed by status code number, values are description strings.
+ * Deno's Response only accepts status 101 and 200-599.
+ */
+export function isValidCode(code: number): boolean {
+  return Number.isInteger(code) &&
+    (code === 101 || (code >= 200 && code <= 599));
+}
+
+/**
+ * Build the standard entries from @std/http/status,
+ * keeping only codes we can actually serve.
  */
 const standardCodes: StatusEntry[] = Object.entries(STATUS_TEXT)
   .map(([codeStr, description]) => ({
     code: Number(codeStr),
     description: description as string,
   }))
+  .filter((entry) => isValidCode(entry.code))
   .sort((a, b) => a.code - b.code);
 
 // Re-export for handler convenience
@@ -30,7 +40,7 @@ export { STATUS_CODE, STATUS_TEXT };
 
 /**
  * Non-standard codes used by various servers and services.
- * These are not in the IANA registry but are commonly encountered.
+ * All are within the servable 200-599 range.
  */
 const nonStandardCodes: StatusEntry[] = [
   { code: 306, description: "Switch Proxy", nonStandard: true },
@@ -103,21 +113,4 @@ export const STATUS_MAP: ReadonlyMap<number, StatusEntry> = new Map(
 /** Get a status entry by code number. Returns undefined for unknown codes. */
 export function getStatus(code: number): StatusEntry | undefined {
   return STATUS_MAP.get(code);
-}
-
-/**
- * Check if a code can be used in a Deno Response.
- * Deno allows 101 and 200-599.
- */
-export function isValidCode(code: number): boolean {
-  return Number.isInteger(code) &&
-    (code === 101 || (code >= 200 && code <= 599));
-}
-
-/**
- * Check if a value looks like a 3-digit HTTP status code number,
- * even if Deno can't serve it.
- */
-export function isThreeDigitCode(code: number): boolean {
-  return Number.isInteger(code) && code >= 100 && code <= 999;
 }

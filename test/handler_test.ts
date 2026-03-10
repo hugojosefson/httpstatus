@@ -125,12 +125,12 @@ Deno.test("unknown code in valid range returns that status", async () => {
   assertEquals(body, "599 Unknown Status Code");
 });
 
-Deno.test("code outside Deno range returns 200 with X-HttpStatus-Requested-Code", async () => {
-  const res = await handler(request("/999"));
-  assertEquals(res.status, 200);
-  assertEquals(res.headers.get("X-HttpStatus-Requested-Code"), "999");
-  const body = await res.text();
-  assertEquals(body, "999 Unknown Status Code");
+Deno.test("unsupported code returns 400", async () => {
+  for (const code of [100, 102, 103, 600, 999]) {
+    const res = await handler(request(`/${code}`));
+    assertEquals(res.status, 400);
+    assertStringIncludes(await res.text(), "not a supported status code");
+  }
 });
 
 Deno.test("invalid path returns 404", async () => {

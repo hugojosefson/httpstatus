@@ -1,3 +1,5 @@
 # @hugojosefson/httpstatus
 
-A reimplementation of httpstat.us
+HTTP status code testing service. Returns any status code you request.
+
+https://httpstatus.deno.dev

@@ -1,9 +1,4 @@
-import {
-  ALL_STATUS_CODES,
-  getStatus,
-  isThreeDigitCode,
-  isValidCode,
-} from "./status-codes.ts";
+import { ALL_STATUS_CODES, getStatus, isValidCode } from "./status-codes.ts";
 import type { StatusEntry } from "./status-codes.ts";
 
 const MAX_SLEEP_MS = 300_000; // 5 minutes
@@ -202,8 +197,6 @@ ${standardEntries.map(renderEntry).join("\n")}
 ${nonStandardEntries.map(renderEntry).join("\n")}
       </tbody>
     </table>
-
-    <p>Any other 3-digit number (100-999) not listed above will also be returned with "Unknown Status Code" as the description.</p>
   </section>
 
   <footer>
@@ -281,30 +274,14 @@ async function handleStatusCode(
   url: URL,
   requestHeaders: Headers,
 ): Promise<Response> {
-  if (!isThreeDigitCode(code)) {
-    return new Response("Invalid status code. Must be between 100 and 999.", {
-      status: 400,
-      headers: { "Content-Type": "text/plain", ...corsHeaders() },
-    });
-  }
-
   if (!isValidCode(code)) {
-    // Deno only supports 101, 200-599 in Response.
-    // Return a 200 response with the requested code in the body.
-    const entry = getStatus(code);
-    const customHeaders = extractCustomHeaders(requestHeaders);
-    const json = wantsJson(requestHeaders);
-    const body = buildBody(entry, code, customHeaders, json);
-    const contentType = json ? "application/json" : "text/plain";
-    return new Response(body, {
-      status: 200,
-      headers: {
-        "Content-Type": contentType,
-        "X-HttpStatus-Requested-Code": String(code),
-        ...corsHeaders(),
-        ...customHeaders,
+    return new Response(
+      `${code} is not a supported status code. See / for the list of supported codes.`,
+      {
+        status: 400,
+        headers: { "Content-Type": "text/plain", ...corsHeaders() },
       },
-    });
+    );
   }
 
   const sleepMs = parseSleep(url, requestHeaders);
