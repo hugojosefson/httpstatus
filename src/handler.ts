@@ -200,7 +200,7 @@ ${nonStandardEntries.map(renderEntry).join("\n")}
   </section>
 
   <footer>
-    <p>A reimplementation of <a href="https://httpstat.us">httpstat.us</a>. <a href="https://github.com/hugojosefson/httpstatus">Source on GitHub</a>.</p>
+    <p>A reimplementation of <strong>httpstat.us</strong>. <a href="https://github.com/hugojosefson/httpstatus">Source on GitHub</a>.</p>
   </footer>
 </body>
 </html>`;
